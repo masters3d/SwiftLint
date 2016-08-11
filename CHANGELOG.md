@@ -6,9 +6,21 @@
 
 ##### Enhancements
 
+* Add content of the todo statement to message.  
+  [J. Cheyo Jimenez](https://github.com/masters3d)
+  [#478](https://github.com/realm/SwiftLint/issues/478)
+
+* Add `PrivateOutletRule` Opt-In rule to enforce `@IBOutlet`
+  instance variables to be `private`.  
+  [Olivier Halligon](https://github.com/AliSoftware)
+
 * Add `LegacyNSGeometryFunctionsRule` rule. Add `NSSize`, `NSPoint`, and 
-  `NSRect` constants and constructors to existing rules.
+  `NSRect` constants and constructors to existing rules.  
   [David Rönnqvist](https://github.com/d-ronnqvist)
+
+* Removed ConditionalBindingCascadeRule.  
+  [J. Cheyo Jimenez](https://github.com/masters3d)
+  [#701](https://github.com/realm/SwiftLint/issues/701)
 
 * Allow setting `flexible_right_spacing` configuration for the `colon` rule.  
   [Shai Mishali](https://github.com/freak4pc)
@@ -25,6 +37,15 @@
   [#689](https://github.com/realm/SwiftLint/issues/689)
 
 ##### Bug Fixes
+
+* Fixed CustomRule Regex.  
+  [J. Cheyo Jimenez](https://github.com/masters3d)
+  [#717](https://github.com/realm/SwiftLint/issues/717)
+  [#726](https://github.com/realm/SwiftLint/issues/726)
+
+* Allow disabling custom rules in code.  
+  [J. Cheyo Jimenez](https://github.com/masters3d)
+  [#515](https://github.com/realm/SwiftLint/issues/515)
 
 * Fix LegacyConstructorRule when using variables instead of numbers.  
   [Sarr Blaise](https://github.com/bsarr007) 
