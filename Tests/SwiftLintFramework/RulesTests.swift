@@ -93,10 +93,6 @@ class RulesTests: XCTestCase {
         verifyRule(CommaRule.description)
     }
 
-    func testConditionalBindingCascade() {
-        verifyRule(ConditionalBindingCascadeRule.description)
-    }
-
     func testControlStatement() {
         verifyRule(ControlStatementRule.description)
     }
@@ -172,6 +168,10 @@ class RulesTests: XCTestCase {
 
     func testOperatorFunctionWhitespace() {
         verifyRule(OperatorFunctionWhitespaceRule.description)
+    }
+
+    func testPrivateOutlet() {
+        verifyRule(PrivateOutletRule.description)
     }
 
     func testReturnArrowWhitespace() {

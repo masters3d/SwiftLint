@@ -6,13 +6,13 @@
 
 ##### Enhancements
 
-* Add content of the todo statement to message.  
-  [J. Cheyo Jimenez](https://github.com/masters3d)
-  [#478](https://github.com/realm/SwiftLint/issues/478)
-
 * Add `PrivateOutletRule` Opt-In rule to enforce `@IBOutlet`
   instance variables to be `private`.  
   [Olivier Halligon](https://github.com/AliSoftware)
+
+* Add content of the todo statement to message.  
+  [J. Cheyo Jimenez](https://github.com/masters3d)
+  [#478](https://github.com/realm/SwiftLint/issues/478)
 
 * Add `LegacyNSGeometryFunctionsRule` rule. Add `NSSize`, `NSPoint`, and 
   `NSRect` constants and constructors to existing rules.  
@@ -35,6 +35,10 @@
 * Add included regex for custom rules to control what files are processed.  
   [bootstraponline](https://github.com/bootstraponline)
   [#689](https://github.com/realm/SwiftLint/issues/689)
+
+* Add configuration for setting a warning threshold.  
+  [woodhamgh](https://github.com/woodhamgh)
+  [696](https://github.com/realm/SwiftLint/issues/696)
 
 ##### Bug Fixes
 
