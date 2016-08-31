@@ -26,8 +26,8 @@ private var structureCache = Cache({file -> Structure? in
     }
     return nil
 })
-private var syntaxMapCache = Cache({file in responseCache.get(file).map(SyntaxMap.init)})
-private var syntaxKindsByLinesCache = Cache({file in file.syntaxKindsByLine()})
+private var syntaxMapCache = Cache({ file in responseCache.get(file).map(SyntaxMap.init) })
+private var syntaxKindsByLinesCache = Cache({ file in file.syntaxKindsByLine() })
 
 private typealias AssertHandler = () -> ()
 private var assertHandlers = [String: AssertHandler?]()
