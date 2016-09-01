@@ -31,21 +31,8 @@ private extension String {
 }
 
 private struct BraceIndex {
-    private enum Brace {
-        case open
-        case close
-    func braceChar() -> String {
-        switch self {
-            case .open:
-                return "{"
-            case .close:
-                return "}"
-            }
-        }
-    }
-
-    let brance: Brace
-    let index: Int
+    let branceKind: Character
+    let range: NSRange
 }
 
 import Foundation
@@ -75,32 +62,44 @@ public struct ClosureSpacingRule: Rule, ConfigurationProviderRule {
 //             "[].map({$0})" : "[].map({ $0 })"
 //        ]
     )
+    
 
+    
     public func validateFile(file: File) -> [StyleViolation] {
-
-        //filter out lines where rule is disabled
-        let lines = file.lines
+        var timer00 = CFAbsoluteTimeGetCurrent()
 
         // find all lines and accurences of open { and closed } braces
         var linesWithBraces = [(Line, [BraceIndex])]()
-        for eachLine in lines {
-            if let start = eachLine.content.rangeOfString("{",
-                                                options: [.LiteralSearch])?.startIndex,
-               let end = eachLine.content.rangeOfString("}",
-                                options: [.LiteralSearch, .BackwardsSearch])?.endIndex
-                where start < end { // filter out lines like '} else {'
 
-                    let openBraces = eachLine.content.findAllIndexes("{",
-                                   searchRange: start..<end).flatMap {
-                                   BraceIndex(brance: .open, index: $0 + eachLine.range.location) }
-                    let closedBraces = eachLine.content.findAllIndexes("}",
-                                   searchRange: start..<end).flatMap {
-                                   BraceIndex(brance: .close, index: $0 + eachLine.range.location) }
-                    let brances = (openBraces + closedBraces).sort { $0.index < $1.index }
+        let openBraces = file.matchPattern("\\{").map { BraceIndex(branceKind: "{", range: $0.0) }
+                                        //excludingSyntaxKinds: SyntaxKind.commentAndStringKinds())
+//                                        .map { BraceIndex(branceKind: "{", range: $0) }
+print("BLOCK 01", terminator:":   "); let timer01 = CFAbsoluteTimeGetCurrent(); print( Double(timer01 - timer00 ) * 1000 )
 
-                    linesWithBraces.append(( eachLine, brances ))
-               }
+        let closeBraces = file.matchPattern("\\}",
+                                        excludingSyntaxKinds: SyntaxKind.commentAndStringKinds())
+                                        .map { BraceIndex(branceKind: "}", range: $0) }
+print("BLOCK 02", terminator:":   "); let timer02 = CFAbsoluteTimeGetCurrent(); print( Double(timer02 - timer01 ) * 1000 )
+      
+        var allbraces = ( openBraces + closeBraces ).sort{ $0.range.location < $1.range.location }
+        
+print("BLOCK 03", terminator:":   "); let timer03 = CFAbsoluteTimeGetCurrent(); print( Double(timer03 - timer02 ) * 1000 )
+        
+//        var allbraces = testingAll.map {$0.range}.map { BraceIndex(branceKind: "{", range: $0)}
+        var currentIndexOnAllBraces = 0
+        for eachLine in file.lines {
+            var bracesInLine = [BraceIndex]()
+            innerLoop:for eachIndex in currentIndexOnAllBraces..<allbraces.count {
+                if eachLine.range.intersectsRange(allbraces[eachIndex].range) {
+                    bracesInLine.append(allbraces[eachIndex])
+                    currentIndexOnAllBraces += 1
+                } else {
+                 break innerLoop
+                }
+            }
+            linesWithBraces.append((eachLine, bracesInLine))
         }
+ /*BLOCK CLOCK*/ let timer04 = CFAbsoluteTimeGetCurrent(); print( Double(timer04 - timer03 ) * 1000 )
 
         // matching up ranges of {}
         var violationRanges = linesWithBraces.flatMap { self.matchBraces($0.1, file:file ) }
@@ -112,6 +111,7 @@ public struct ClosureSpacingRule: Rule, ConfigurationProviderRule {
                     }
 
         violationRanges = file.ruleEnabledViolatingRanges(violationRanges, forRule: self)
+ /*BLOCK CLOCK*/ let timer05 = CFAbsoluteTimeGetCurrent(); print( Double(timer05 - timer04 ) * 1000 )
 
         return violationRanges.flatMap { StyleViolation(
                                         ruleDescription: self.dynamicType.description,
@@ -127,27 +127,14 @@ private extension ClosureSpacingRule {
         // match open braces to closing braces
         func matchBraces(input: [BraceIndex], file: File ) -> [NSRange] {
             if input.isEmpty { return [] }
-            let syntax = file.syntaxMap
-            let nsstring = file.contents
-
-            //filter out occurences of { and } in comments or strings
-            func filterOutStringAndComments(input: [BraceIndex]) -> [BraceIndex] {
-                return input.filter {
-                   guard let byteRange = nsstring.NSRangeToByteRange(start: $0.index, length: 1)
-                        else { return false }
-                    let tokensIn = syntax.tokensIn(byteRange)
-                    let syntaxTokens = tokensIn.flatMap { SyntaxKind(rawValue: $0.type) }
-                return Set(SyntaxKind.commentAndStringKinds()).isDisjointWith( syntaxTokens )
-                }
-            }
             var ranges = [NSRange]()
-            var indexes = filterOutStringAndComments(input)
-            var bracesAsString = indexes.map { $0.brance.braceChar() }.joinWithSeparator("")
+            var indexes = input
+            var bracesAsString = indexes.map { String($0.branceKind) }.joinWithSeparator("")
 
             while let foundRange = bracesAsString.rangeOfString("{}") {
                 let startIndex = bracesAsString.startIndex.distanceTo(foundRange.startIndex)
-                let location = indexes[startIndex].index
-                let length = indexes[startIndex + 1 ].index + 1 - location
+                let location = indexes[startIndex].range.location
+                let length = indexes[startIndex + 1 ].range.location + 1 - location
                 ranges.append(NSRange(location:location, length: length))
                 bracesAsString.replaceRange(foundRange, with: "")
                 indexes.removeRange(startIndex...startIndex  + 1)
