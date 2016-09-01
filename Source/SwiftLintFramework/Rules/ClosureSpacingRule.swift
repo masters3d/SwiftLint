@@ -79,8 +79,7 @@ public struct ClosureSpacingRule: Rule, ConfigurationProviderRule {
     public func validateFile(file: File) -> [StyleViolation] {
 
         //filter out lines where rule is disabled
-        let lines = file.lines.filter {
-                !file.ruleEnabledViolatingRanges([$0.range], forRule: self).isEmpty }
+        let lines = file.lines
 
         // find all lines and accurences of open { and closed } braces
         var linesWithBraces = [(Line, [BraceIndex])]()
@@ -103,18 +102,16 @@ public struct ClosureSpacingRule: Rule, ConfigurationProviderRule {
                }
         }
 
-        // filter out lines disabled and braces in comments and strings
-        linesWithBraces = linesWithBraces.filter {
-                            !file.ruleEnabledViolatingRanges([$0.0.range], forRule: self).isEmpty }
-
         // matching up ranges of {}
-        let violationRanges = linesWithBraces.flatMap { self.matchBraces($0.1, file:file ) }
+        var violationRanges = linesWithBraces.flatMap { self.matchBraces($0.1, file:file ) }
                 .filter {                       //removes enclosing brances to just content
                 let content = file.contents.substring($0.location + 1, length: $0.length - 2)
                 if content.isEmpty { return false } // case when {} is not a closure
                 let cleaned = content.stringByTrimmingCharactersInSet(.whitespaceCharacterSet())
                 return content == cleaned
                     }
+
+        violationRanges = file.ruleEnabledViolatingRanges(violationRanges, forRule: self)
 
         return violationRanges.flatMap { StyleViolation(
                                         ruleDescription: self.dynamicType.description,
