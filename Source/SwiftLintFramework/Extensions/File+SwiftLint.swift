@@ -82,8 +82,13 @@ extension File {
 
     internal func rangesAndTokensMatching(regex: NSRegularExpression) ->
         [(NSRange, [SyntaxToken])] {
+         let range = NSRange(location: 0, length: self.contents.utf16.count)
+         return rangesAndTokensMatching(regex, range: range)
+         }
+
+    internal func rangesAndTokensMatching(regex: NSRegularExpression, range: NSRange) ->
+        [(NSRange, [SyntaxToken])] {
         let contents = self.contents as NSString
-        let range = NSRange(location: 0, length: contents.length)
         let syntax = syntaxMap
         return regex.matchesInString(self.contents, options: [], range: range).map { match in
             let matchByteRange = contents.NSRangeToByteRange(start: match.range.location,
