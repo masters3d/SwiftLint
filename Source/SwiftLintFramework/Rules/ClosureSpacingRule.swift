@@ -10,18 +10,49 @@ import Foundation
 import SourceKittenFramework
 
 extension File {
-    private func violatingClosureSpacingRanges() -> [NSRange] {
-        return matchPattern("\\{|\\}",
-             excludingSyntaxKinds: SyntaxKind.commentAndStringKinds()
-             )
+    private func allBracesWithInRange(range: NSRange) -> [NSRange] {
+        
+        let syntaxKinds = SyntaxKind.commentAndStringKinds()
+        return allBracesRangesAndTokens(range)
+        .map { range, tokens in
+            (range, tokens.flatMap { SyntaxKind(rawValue: $0.type) })}
+        .filter { $0.1.filter(syntaxKinds.contains).isEmpty }
+        .map { $0.0 }
+    }
+    
+    private func allBracesRangesAndTokens(range:NSRange) ->
+    [(NSRange, [SyntaxToken])] {
+        let pattern = "\\{|\\}"
+        return rangesAndTokensMatching(pattern, range: range)
+    }
+    
+}
+
+private extension String {
+    
+ func firstIndexOf(search: String) -> Int? {
+        if let range = rangeOfString(search, options: [.LiteralSearch]) {
+            return startIndex.distanceTo(range.startIndex)
+        }
+        return nil
+    }
+    
+  func findFirstAndLastBrace() -> NSRange? {
+    if let start = firstIndexOf("{"),
+        let end = self.lastIndexOf("}")
+        where start < end {
+            return NSRange(start...end)
+        }
+     else { return nil }
     }
 }
+
 
 public struct ClosureSpacingRule: Rule, ConfigurationProviderRule {
 
     public var configuration = SeverityConfiguration(.Warning)
 
-    public init() { }
+    public init() {}
 
     public static let description = RuleDescription(
         identifier: "closure_spacing",
@@ -45,33 +76,26 @@ public struct ClosureSpacingRule: Rule, ConfigurationProviderRule {
     public func validateFile(file: File) -> [StyleViolation] {
 var timer00 = CFAbsoluteTimeGetCurrent()
 
+        var linesWithBraces = [[NSRange]]()
+        // find all lines and accurences of open { and closed } braces
+        
+        let firstPass:[NSRange] = file.lines.flatMap {
+            guard let localRange = $0.content.findFirstAndLastBrace()
+                else { return nil }
+            
+            let fileRange = NSRange(location: localRange.location + $0.range.location,
+                                      length: localRange.length)
+            return fileRange
+        }
 print("BLOCK 01", terminator:":   "); let timer01 = CFAbsoluteTimeGetCurrent(); print( Double(timer01 - timer00 ) * 1000 )
 
-        let braceRanges = file.violatingClosureSpacingRanges()
+        linesWithBraces = firstPass.map { file.allBracesWithInRange($0) }
+
 
 print("BLOCK 02", terminator:":   "); let timer02 = CFAbsoluteTimeGetCurrent(); print( Double(timer02 - timer01 ) * 1000 )
 
-        var allbraces = braceRanges//.sort { $0.location < $1.location }
-
 print("BLOCK 03", terminator:":   "); let timer03 = CFAbsoluteTimeGetCurrent(); print( Double(timer03 - timer02 ) * 1000 )
 
-        var linesWithBraces = [[NSRange]]()
-        // find all lines and accurences of open { and closed } braces
-        var currentIndexOnAllBraces = 0
-        for eachLine in file.lines {
-            var bracesInLine = [NSRange]()
-            innerLoop:for eachIndex in currentIndexOnAllBraces..<allbraces.count {
-                if eachLine.range.intersectsRange(allbraces[eachIndex]) {
-                    bracesInLine.append(allbraces[eachIndex])
-                    currentIndexOnAllBraces += 1
-                } else {
-                 break innerLoop
-                }
-            }
-            if bracesInLine.count > 1 {
-            linesWithBraces.append(bracesInLine)
-            }
-        }
 print("BLOCK 04", terminator:":   ");let timer04 = CFAbsoluteTimeGetCurrent(); print( Double(timer04 - timer03 ) * 1000 )
 
  // match open braces to closing braces
@@ -81,7 +105,6 @@ print("BLOCK 04", terminator:":   ");let timer04 = CFAbsoluteTimeGetCurrent(); p
             var indexes = input
             var bracesAsString = indexes.map { file.contents.substring($0.location,
                                                         length: $0.length) }.joinWithSeparator("")
-
             while let foundRange = bracesAsString.rangeOfString("{}") {
                 let startIndex = bracesAsString.startIndex.distanceTo(foundRange.startIndex)
                 let location = indexes[startIndex].location

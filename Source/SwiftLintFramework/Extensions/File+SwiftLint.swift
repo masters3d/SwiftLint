@@ -80,6 +80,11 @@ extension File {
         return rangesAndTokensMatching(regex(pattern))
     }
 
+    internal func rangesAndTokensMatching(pattern: String, range: NSRange) ->
+        [(NSRange, [SyntaxToken])] {
+        return rangesAndTokensMatching(regex(pattern), range: range)
+    }
+
     internal func rangesAndTokensMatching(regex: NSRegularExpression) ->
         [(NSRange, [SyntaxToken])] {
          let range = NSRange(location: 0, length: self.contents.utf16.count)
@@ -106,6 +111,14 @@ extension File {
         return rangesAndTokensMatching(regex).map { range, tokens in
             (range, tokens.flatMap { SyntaxKind(rawValue: $0.type) })
         }
+    }
+    
+    internal func syntaxTokensByLine() -> [[SyntaxToken]]? {
+            if sourcekitdFailed {
+            return nil
+        }
+        let syntax = syntaxMap
+        return lines.map { syntax.tokensIn($0.byteRange) }
     }
 
     internal func syntaxKindsByLine() -> [[SyntaxKind]]? {
