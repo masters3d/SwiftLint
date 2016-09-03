@@ -112,13 +112,14 @@ extension File {
             (range, tokens.flatMap { SyntaxKind(rawValue: $0.type) })
         }
     }
-    
+
     internal func syntaxTokensByLine() -> [[SyntaxToken]]? {
             if sourcekitdFailed {
             return nil
         }
         let syntax = syntaxMap
-        return lines.map { syntax.tokensIn($0.byteRange) }
+        // adding + 1 to the beginning to match syntaxkindByline
+        return [] + lines.map { syntax.tokensIn($0.byteRange) }
     }
 
     internal func syntaxKindsByLine() -> [[SyntaxKind]]? {

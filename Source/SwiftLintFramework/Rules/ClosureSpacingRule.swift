@@ -26,6 +26,12 @@ extension File {
         return rangesAndTokensMatching(pattern, range: range)
     }
     
+    private func allBracesRances(inRange: NSRange) -> [NSRange] {
+        let pattern = regex("\\{|\\}")
+       return pattern.matchesInString(self.contents, options: [],
+                            range: inRange).map { $0.range }
+    }
+
 }
 
 private extension String {
@@ -74,22 +80,26 @@ public struct ClosureSpacingRule: Rule, ConfigurationProviderRule {
     )
 
     public func validateFile(file: File) -> [StyleViolation] {
+    let kidsToExclude = SyntaxKind.commentAndStringKinds().map {$0.rawValue}
 var timer00 = CFAbsoluteTimeGetCurrent()
 
         var linesWithBraces = [[NSRange]]()
         // find all lines and accurences of open { and closed } braces
         
-        let firstPass:[NSRange] = file.lines.flatMap {
-            guard let localRange = $0.content.findFirstAndLastBrace()
-                else { return nil }
+        
+        for eachLine in file.lines {
+            guard let localRange = eachLine.content.findFirstAndLastBrace()
+                else { continue }
             
-            let fileRange = NSRange(location: localRange.location + $0.range.location,
+            let fileRange = NSRange(location: localRange.location + eachLine.range.location,
                                       length: localRange.length)
-            return fileRange
-        }
+            let bracesTokes = file.allBracesRangesAndTokens(fileRange).filter {
+                                    Set($0.1.map{$0.type}).isDisjointWith(kidsToExclude)
+                                }.map { $0.0 }
+            linesWithBraces.append(bracesTokes)
+       }
+        
 print("BLOCK 01", terminator:":   "); let timer01 = CFAbsoluteTimeGetCurrent(); print( Double(timer01 - timer00 ) * 1000 )
-
-        linesWithBraces = firstPass.map { file.allBracesWithInRange($0) }
 
 
 print("BLOCK 02", terminator:":   "); let timer02 = CFAbsoluteTimeGetCurrent(); print( Double(timer02 - timer01 ) * 1000 )
