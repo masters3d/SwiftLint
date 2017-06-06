@@ -216,6 +216,14 @@ extension LinterCacheTests {
     ]
 }
 
+extension ModifiersOrderTests {
+    static var allTests: [(String, (ModifiersOrderTests) -> () throws -> Void)] = [
+        ("testAttibuteStatic", testAttibuteStatic),
+        ("testAttibuteClass", testAttibuteClass),
+        ("testAttributesOrderLeft", testAttributesOrderLeft)
+    ]
+}
+
 extension NumberSeparatorRuleTests {
     static var allTests: [(String, (NumberSeparatorRuleTests) -> () throws -> Void)] = [
         ("testNumberSeparatorWithDefaultConfiguration", testNumberSeparatorWithDefaultConfiguration),
@@ -339,6 +347,7 @@ extension RulesTests {
         ("testLegacyNSGeometryFunctions", testLegacyNSGeometryFunctions),
         ("testLegacyConstant", testLegacyConstant),
         ("testLegacyConstructor", testLegacyConstructor),
+        ("testModifiersOrderRule", testModifiersOrderRule),
         ("testMark", testMark),
         ("testMultilineParameters", testMultilineParameters),
         ("testNesting", testNesting),
@@ -459,6 +468,7 @@ XCTMain([
     testCase(LineLengthConfigurationTests.allTests),
     testCase(LineLengthRuleTests.allTests),
     testCase(LinterCacheTests.allTests),
+    testCase(ModifiersOrderTests.allTests),
     testCase(NumberSeparatorRuleTests.allTests),
     testCase(ObjectLiteralRuleTests.allTests),
     testCase(RegionTests.allTests),

@@ -165,6 +165,10 @@ class RulesTests: XCTestCase {
         verifyRule(LegacyConstructorRule.description)
     }
 
+    func testModifiersOrderRule() {
+        verifyRule(ModifiersOrderRule.description)
+    }
+
     func testMark() {
         verifyRule(MarkRule.description, commentDoesntViolate: false)
     }
