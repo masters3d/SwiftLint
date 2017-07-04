@@ -209,6 +209,7 @@ class RulesTests: XCTestCase {
 
     func testLiteralExpressionEndIdentation() {
         verifyRule(LiteralExpressionEndIdentationRule.description)
+    }
 
     func testModifiersOrderRule() {
         verifyRule(ModifiersOrderRule.description)
