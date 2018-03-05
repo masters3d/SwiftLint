@@ -8851,9 +8851,6 @@ let foo = ↓1000000.000000_1
 
 
 
-<<<<<<< HEAD
-## Object Literal
-=======
 ## Modifiers Order
 
 Identifier | Enabled by default | Supports autocorrection | Kind 
@@ -8917,7 +8914,68 @@ class MyClass {static public let nnumber = 3
 
 
 ## Multiline Parameters
->>>>>>> added rule documentation and ruleKind
+
+Identifier | Enabled by default | Supports autocorrection | Kind 
+--- | --- | --- | ---
+`modifiers_order` | Disabled | No | style
+
+Modifiers order should be consistent.
+
+### Examples
+
+<details>
+<summary>Non Triggering Examples</summary>
+
+```swift
+@objc 
+public final class MyClass: NSObject {
+private final func myFinal() {}
+weak var myWeak: NSString? = nil
+public static let nnumber = 3 
+ }
+```
+
+```swift
+public final class MyClass {}
+```
+
+</details>
+<details>
+<summary>Triggering Examples</summary>
+
+```swift
+@objc 
+public final class MyClass: NSObject {
+final private func myFinal() {}
+}
+```
+
+```swift
+@objc 
+final public class MyClass: NSObject {}
+
+```
+
+```swift
+final public class MyClass {}
+
+```
+
+```swift
+class MyClass {weak internal var myWeak: NSString? = nil
+}
+```
+
+```swift
+class MyClass {static public let nnumber = 3 
+ }
+```
+
+</details>
+
+
+
+## Object Literal
 
 Identifier | Enabled by default | Supports autocorrection | Kind 
 --- | --- | --- | ---
