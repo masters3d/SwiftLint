@@ -9,17 +9,80 @@
 import Foundation
 import SourceKittenFramework
 
-private extension Array where Element == String {
-    func sorted(byComparingTo reference: [String]) -> [String] {
-        return self.sorted(by: { (lhs, rhs) -> Bool in
-            guard let left = reference.index(of: lhs), let right = reference.index(of: rhs)
-                else { return false }
-            return left < right
-        })
+// TODO: Get somehow `SwiftDeclarationAttribute` for Swift 4.1
+public enum SwiftDeclarationAttributeKind: String, SwiftLangSyntax  {
+    case `ibaction`         = "source.decl.attribute.ibaction"
+    case `iboutlet`         = "source.decl.attribute.iboutlet"
+    case `ibdesignable`     = "source.decl.attribute.ibdesignable"
+    case `ibinspectable`    = "source.decl.attribute.ibinspectable"
+    case `objc`             = "source.decl.attribute.objc"
+    case name               = "source.decl.attribute.objc.name"
+    case available          = "source.decl.attribute.available"
+    case `final`            = "source.decl.attribute.final"
+    case `required`         = "source.decl.attribute.required"
+    case `optional`         = "source.decl.attribute.optional"
+    case noreturn           = "source.decl.attribute.noreturn"
+    case `NSManaged`        = "source.decl.attribute.NSManaged"
+    case `lazy`             = "source.decl.attribute.lazy"
+    case `dynamic`          = "source.decl.attribute.dynamic"
+    case infix              = "source.decl.attribute.infix"
+    case prefix             = "source.decl.attribute.prefix"
+    case postfix            = "source.decl.attribute.postfix"
+    case autoclosure        = "source.decl.attribute.autoclosure"
+    case noescape           = "source.decl.attribute.noescape"
+    case nonobjc            = "source.decl.attribute.nonobjc"
+    case objcMembers        = "source.decl.attribute.objcMembers"
+    case `mutating`         = "source.decl.attribute.mutating"
+    case `nonmutating`      = "source.decl.attribute.nonmutating"
+    case `convenience`      = "source.decl.attribute.convenience"
+    case `override`         = "source.decl.attribute.override"
+    case `weak`             = "source.decl.attribute.weak"
+    case `testable`         = "source.decl.attribute.testable"
+    case privateSetter      = "source.decl.attribute.setter_access.private"
+    case `public`           = "source.decl.attribute.public"
+    case `private`          = "source.decl.attribute.private"
+    case `internal`         = "source.decl.attribute.internal"
+    case `open`             = "source.decl.attribute.open"
+}
+
+extension SwiftDeclarationAttributeKind {
+    static var ACLs: [SwiftDeclarationAttributeKind] {
+        return [.private,
+                .internal,
+                .public,
+                .open]
+    }
+
+    static var mutators: [SwiftDeclarationAttributeKind] {
+        return [.mutating,
+                .nonmutating]
+    }
+
+    static var overrides: [SwiftDeclarationAttributeKind] {
+        return [.override]
+>>>>>>> Stashed changes
     }
 }
 
-public struct ModifiersOrderRule: OptInRule, ConfigurationProviderRule {
+// TODO: Get the possible groups of attribute kinds
+public enum SwiftDeclarationAttributeKindGroup {
+    case acl
+    case mutators
+    case `override`
+
+    var swiftDeclarationAttributeKinds: [SwiftDeclarationAttributeKind] {
+        switch self {
+        case .acl:
+            return SwiftDeclarationAttributeKind.ACLs
+        case .mutators:
+            return SwiftDeclarationAttributeKind.mutators
+        case .override:
+            return SwiftDeclarationAttributeKind.overrides
+        }
+    }
+}
+
+public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule {
     public init() { }
     public var configuration = ModifiersOrderConfiguration(beforeACL: ["override"], afterACL: [])
     public static let description = RuleDescription(
@@ -27,6 +90,7 @@ public struct ModifiersOrderRule: OptInRule, ConfigurationProviderRule {
         name: "Modifiers Order",
         description: "Modifiers order should be consistent.", kind: RuleKind.style,
         nonTriggeringExamples: [
+            "@objc \n override public private(set) weak var foo: Bar?\n @objc \npublic final class MyClass: NSObject {\n }",
             "@objc \npublic final class MyClass: NSObject {\n" +
             "private final func myFinal() {}\n" +
             "weak var myWeak: NSString? = nil\n" +
@@ -50,107 +114,61 @@ public struct ModifiersOrderRule: OptInRule, ConfigurationProviderRule {
         ]
     )
 
-    private func extractContinuousSections(from tokens: [SyntaxToken], in file: File) -> [[SyntaxToken]] {
-        var builtInTokenSections = [[SyntaxToken]]()
-        var tokenSection = [SyntaxToken]()
-        let builtIn = "source.lang.swift.syntaxtype.attribute.builtin"
-        let keyword = "source.lang.swift.syntaxtype.keyword"
-        let declClass = "source.lang.swift.decl.class"
+    private let observedDeclarationKinds: [SwiftDeclarationKind] =  [.class,
+                                                                     .enum,
+                                                                     .extension,
+                                                                     .protocol,
+                                                                     .functionConstructor,
+                                                                     .functionDestructor,
+                                                                     .functionMethodClass,
+                                                                     .functionMethodInstance,
+                                                                     .functionMethodStatic,
+                                                                     .functionOperator,
+                                                                     .functionSubscript,
+                                                                     .struct,
+                                                                     .varClass,
+                                                                     .varGlobal,
+                                                                     .varInstance,
+                                                                     .varLocal,
+                                                                     .varParameter,
+                                                                     .varStatic]
 
-        for token in tokens {
-            // static & class are not builtin attibutes so we check every keyword for static || class
-            if token.type == keyword,
-                token.length == "static".bridge().length || token.length == "class".bridge().length,
-                let keywordAtLoc = file.contents.bridge()
-                                .substringWithByteRange(start: token.offset, length: token.length) {
-                    switch keywordAtLoc {
-                    case "static":
-                        tokenSection.append(token)
-                    // filter out `class` when used as a declaration
-                    case "class" :
-                        if let (kind, _) = file.structure.kinds(forByteOffset: token.offset)
-                                            .first(where: { $0.byteRange.location == token.offset }),
-                            kind != declClass {
-                                tokenSection.append(token)
-                            }
-                    default: continue
-                    }
-            } else if token.type == builtIn {
-                tokenSection.append(token)
-            } else if !tokenSection.isEmpty {
-                builtInTokenSections.append(tokenSection)
-                tokenSection.removeAll()
-            }
+    public func validate(file: File,
+                         kind: SwiftDeclarationKind,
+                         dictionary: [String: SourceKitRepresentable]) -> [StyleViolation] {
+
+        guard observedDeclarationKinds.contains(kind) else {
+            return []
         }
-        if !tokenSection.isEmpty {
-            builtInTokenSections.append(tokenSection)
-        }
-        return builtInTokenSections.filter({ $0.count > 1 })
+
+        let enclosedSwiftAttributesWithMetaData = dictionary.enclosedSwiftAttributesWithMetaData
+        let aclIndex = findIndex(of: .acl, in: enclosedSwiftAttributesWithMetaData)
+        print("\(String(describing: aclIndex))")
+        // TODO: 1. Get indexes that could be in front of ACL
+        //       2. Check if any of them is after ACL or not
+        return []
     }
 
-    private func isAccessControlLabel(_ input: String) -> Bool {
-        let ACL = ["private", "internal", "public", "open"]
-        // were are checking the prefix so we dont need fileprivate, private(set), public(set), ETC
-        for each in ACL where input.hasPrefix(each) {
-            return true
+    func findIndex(of group: SwiftDeclarationAttributeKindGroup, in declarationAttributes: [[String: SourceKitRepresentable]]) -> Int? {
+        let ordered = order(declarationAttributes: declarationAttributes)
+        let modifiers = ordered.compactMap { attributeOrMetaData -> SwiftDeclarationAttributeKind? in
+            if let attribute = attributeOrMetaData["key.attribute"] as? String {
+                return SwiftDeclarationAttributeKind(rawValue: attribute)
+            }
+            return nil
         }
-        return false
+
+        let groupIndex = modifiers.index { return group.swiftDeclarationAttributeKinds.contains($0) }
+        return groupIndex
     }
 
-    public func validate(file: File) -> [StyleViolation] {
-        let tokenSections = extractContinuousSections(from: file.syntaxMap.tokens, in: file)
-        let builtIns: [(offset: Int, values: [String])] = tokenSections.flatMap({
-            guard let first = $0.first, let last = $0.last
-                else { return nil }
-            let length = last.offset - first.offset + last.length
-            guard let builtInString = file.contents.bridge().substringWithByteRange(start: first.offset, length: length)
-                else { return nil }
-            let strings = builtInString.bridge().components(separatedBy: CharacterSet.whitespacesAndNewlines)
-                    .filter({ !$0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty })
-            return (first.offset, strings)
-        })
-        return builtIns.flatMap({
-            var attibutes = [String]()
-            var accessLabels = [String]()
-            var beforeACL = [String]()
-            var afterACL = [String]()
-            var otherModifiers = [String]()
-
-            for each in $0.values {
-                if each.hasPrefix("@") {
-                    attibutes.append(each)
-                    continue
-                }
-                if isAccessControlLabel(each) {
-                    accessLabels.append(each)
-                    continue
-                }
-                // The same element is not in both beforeACL & afterACL
-                // The config file checks this and if not it throws an invalid config error
-                if configuration.beforeACL.contains(each) {
-                    beforeACL.append(each)
-                    continue
-                }
-                if configuration.afterACL.contains(each) {
-                    afterACL.append(each)
-                    continue
-                }
-                // Catch All for non configured modifiers
-                otherModifiers.append(each)
-
+    private func order(declarationAttributes: [[String: SourceKitRepresentable]]) ->  [[String: SourceKitRepresentable]] {
+        return declarationAttributes.sorted(by: { rhs, lhs in
+            guard let rhsOffset = rhs["key.offset"] as? Int64,
+                let lhsOffset = lhs["key.offset"] as? Int64 else {
+                    return false
             }
-            // sorting according to  reference configuration
-            beforeACL = beforeACL.sorted(byComparingTo: configuration.beforeACL)
-            afterACL = afterACL.sorted(byComparingTo: configuration.afterACL)
-
-            let ordered = attibutes + beforeACL + accessLabels + afterACL + otherModifiers
-            if ordered == $0.values {
-                return nil
-            } else {
-             return StyleViolation(ruleDescription: ModifiersOrderRule.description,
-                                   location: Location(file: file, byteOffset: $0.offset),
-                                   reason: ordered.joined(separator: " "))
-            }
+            return rhsOffset < lhsOffset
         })
     }
 }
