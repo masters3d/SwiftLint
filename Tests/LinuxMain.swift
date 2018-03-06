@@ -5,7 +5,7 @@
 //  Created by JP Simard on 12/11/16.
 //  Copyright © 2016 Realm. All rights reserved.
 //
-// Generated using Sourcery 0.10.1 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 0.11.0 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
 @testable import SwiftLintFrameworkTests
@@ -66,6 +66,10 @@ extension ConfigurationTests {
         ("testDisabledRulesWithUnknownRule", testDisabledRulesWithUnknownRule),
         ("testDuplicatedRules", testDuplicatedRules),
         ("testExcludedPaths", testExcludedPaths),
+        ("testForceExcludesFile", testForceExcludesFile),
+        ("testForceExcludesFileNotPresentInExcluded", testForceExcludesFileNotPresentInExcluded),
+        ("testForceExcludesDirectory", testForceExcludesDirectory),
+        ("testForceExcludesDirectoryThatIsNotInExcludedButHasChildrenThatAre", testForceExcludesDirectoryThatIsNotInExcludedButHasChildrenThatAre),
         ("testLintablePaths", testLintablePaths),
         ("testIsEqualTo", testIsEqualTo),
         ("testIsNotEqualTo", testIsNotEqualTo),
@@ -125,6 +129,20 @@ extension CyclomaticComplexityRuleTests {
     ]
 }
 
+extension DisableAllTests {
+    static var allTests: [(String, (DisableAllTests) -> () throws -> Void)] = [
+        ("testViolatingPhrase", testViolatingPhrase),
+        ("testDisableAll", testDisableAll),
+        ("testEnableAll", testEnableAll),
+        ("testDisableAllPrevious", testDisableAllPrevious),
+        ("testEnableAllPrevious", testEnableAllPrevious),
+        ("testDisableAllNext", testDisableAllNext),
+        ("testEnableAllNext", testEnableAllNext),
+        ("testDisableAllThis", testDisableAllThis),
+        ("testEnableAllThis", testEnableAllThis)
+    ]
+}
+
 extension DiscouragedDirectInitRuleTests {
     static var allTests: [(String, (DiscouragedDirectInitRuleTests) -> () throws -> Void)] = [
         ("testDiscouragedDirectInitWithDefaultConfiguration", testDiscouragedDirectInitWithDefaultConfiguration),
@@ -136,6 +154,25 @@ extension DiscouragedDirectInitRuleTests {
 
 extension DocumentationTests {
     static var allTests: [(String, (DocumentationTests) -> () throws -> Void)] = [
+    ]
+}
+
+extension ExplicitTypeInterfaceConfigurationTests {
+    static var allTests: [(String, (ExplicitTypeInterfaceConfigurationTests) -> () throws -> Void)] = [
+        ("testDefaultConfiguration", testDefaultConfiguration),
+        ("testApplyingCustomConfiguration", testApplyingCustomConfiguration),
+        ("testInvalidKeyInCustomConfiguration", testInvalidKeyInCustomConfiguration),
+        ("testInvalidTypeOfCustomConfiguration", testInvalidTypeOfCustomConfiguration),
+        ("testInvalidTypeOfValueInCustomConfiguration", testInvalidTypeOfValueInCustomConfiguration),
+        ("testConsoleDescription", testConsoleDescription)
+    ]
+}
+
+extension ExplicitTypeInterfaceRuleTests {
+    static var allTests: [(String, (ExplicitTypeInterfaceRuleTests) -> () throws -> Void)] = [
+        ("testExplicitTypeInterface", testExplicitTypeInterface),
+        ("testExcludeLocalVars", testExcludeLocalVars),
+        ("testExcludeClassVars", testExcludeClassVars)
     ]
 }
 
@@ -186,7 +223,8 @@ extension IdentifierNameRuleTests {
         ("testIdentifierName", testIdentifierName),
         ("testIdentifierNameWithAllowedSymbols", testIdentifierNameWithAllowedSymbols),
         ("testIdentifierNameWithAllowedSymbolsAndViolation", testIdentifierNameWithAllowedSymbolsAndViolation),
-        ("testIdentifierNameWithIgnoreStartWithLowercase", testIdentifierNameWithIgnoreStartWithLowercase)
+        ("testIdentifierNameWithIgnoreStartWithLowercase", testIdentifierNameWithIgnoreStartWithLowercase),
+        ("testLinuxCrashOnEmojiNames", testLinuxCrashOnEmojiNames)
     ]
 }
 
@@ -254,7 +292,8 @@ extension LinterCacheTests {
         ("testWhitelistRulesChangedOrAddedOrRemovedCausesAllFilesToBeReLinted", testWhitelistRulesChangedOrAddedOrRemovedCausesAllFilesToBeReLinted),
         ("testRuleConfigurationChangedOrAddedOrRemovedCausesAllFilesToBeReLinted", testRuleConfigurationChangedOrAddedOrRemovedCausesAllFilesToBeReLinted),
         ("testSwiftVersionChangedRemovedCausesAllFilesToBeReLinted", testSwiftVersionChangedRemovedCausesAllFilesToBeReLinted),
-        ("testDetectSwiftVersion", testDetectSwiftVersion)
+        ("testDetectSwiftVersion", testDetectSwiftVersion),
+        ("testCacheToJSONDoesntCrash", testCacheToJSONDoesntCrash)
     ]
 }
 
@@ -410,16 +449,18 @@ extension RulesTests {
         ("testDiscardedNotificationCenterObserver", testDiscardedNotificationCenterObserver),
         ("testDiscouragedObjectLiteral", testDiscouragedObjectLiteral),
         ("testDiscouragedOptionalBoolean", testDiscouragedOptionalBoolean),
+        ("testDiscouragedOptionalCollection", testDiscouragedOptionalCollection),
         ("testDynamicInline", testDynamicInline),
         ("testEmptyCount", testEmptyCount),
         ("testEmptyEnumArguments", testEmptyEnumArguments),
         ("testEmptyParameters", testEmptyParameters),
+        ("testLowerACLThanParent", testLowerACLThanParent),
         ("testEmptyParenthesesWithTrailingClosure", testEmptyParenthesesWithTrailingClosure),
+        ("testEmptyString", testEmptyString),
         ("testExplicitACL", testExplicitACL),
         ("testExplicitEnumRawValue", testExplicitEnumRawValue),
         ("testExplicitInit", testExplicitInit),
         ("testExplicitTopLevelACL", testExplicitTopLevelACL),
-        ("testExplicitTypeInterface", testExplicitTypeInterface),
         ("testExtensionAccessModifier", testExtensionAccessModifier),
         ("testFallthrough", testFallthrough),
         ("testFatalErrorMessage", testFatalErrorMessage),
@@ -490,6 +531,7 @@ extension RulesTests {
         ("testTypeBodyLength", testTypeBodyLength),
         ("testUnneededBreakInSwitch", testUnneededBreakInSwitch),
         ("testUnneededParenthesesInClosureArgument", testUnneededParenthesesInClosureArgument),
+        ("testUntypedErrorInCatch", testUntypedErrorInCatch),
         ("testUnusedClosureParameter", testUnusedClosureParameter),
         ("testUnusedEnumerated", testUnusedEnumerated),
         ("testValidIBInspectable", testValidIBInspectable),
@@ -579,8 +621,11 @@ XCTMain([
     testCase(CustomRulesTests.allTests),
     testCase(CyclomaticComplexityConfigurationTests.allTests),
     testCase(CyclomaticComplexityRuleTests.allTests),
+    testCase(DisableAllTests.allTests),
     testCase(DiscouragedDirectInitRuleTests.allTests),
     testCase(DocumentationTests.allTests),
+    testCase(ExplicitTypeInterfaceConfigurationTests.allTests),
+    testCase(ExplicitTypeInterfaceRuleTests.allTests),
     testCase(ExtendedNSStringTests.allTests),
     testCase(FileHeaderRuleTests.allTests),
     testCase(FileLengthRuleTests.allTests),

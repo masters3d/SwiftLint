@@ -78,6 +78,10 @@ class RulesTests: XCTestCase {
         verifyRule(DiscouragedOptionalBooleanRule.description)
     }
 
+    func testDiscouragedOptionalCollection() {
+        verifyRule(DiscouragedOptionalCollectionRule.description)
+    }
+
     func testDynamicInline() {
         verifyRule(DynamicInlineRule.description)
     }
@@ -94,8 +98,16 @@ class RulesTests: XCTestCase {
         verifyRule(EmptyParametersRule.description)
     }
 
+    func testLowerACLThanParent() {
+        verifyRule(LowerACLThanParentRule.description)
+    }
+
     func testEmptyParenthesesWithTrailingClosure() {
         verifyRule(EmptyParenthesesWithTrailingClosureRule.description)
+    }
+
+    func testEmptyString() {
+        verifyRule(EmptyStringRule.description)
     }
 
     func testExplicitACL() {
@@ -112,10 +124,6 @@ class RulesTests: XCTestCase {
 
     func testExplicitTopLevelACL() {
         verifyRule(ExplicitTopLevelACLRule.description)
-    }
-
-    func testExplicitTypeInterface() {
-        verifyRule(ExplicitTypeInterfaceRule.description)
     }
 
     func testExtensionAccessModifier() {
@@ -211,7 +219,7 @@ class RulesTests: XCTestCase {
         verifyRule(LiteralExpressionEndIdentationRule.description)
     }
 
-    func testModifiersOrderRule() {
+    func testModifiersOrder() {
         verifyRule(ModifiersOrderRule.description)
     }
 
@@ -431,6 +439,10 @@ class RulesTests: XCTestCase {
 
     func testUnneededParenthesesInClosureArgument() {
         verifyRule(UnneededParenthesesInClosureArgumentRule.description)
+    }
+
+    func testUntypedErrorInCatch() {
+        verifyRule(UntypedErrorInCatchRule.description)
     }
 
     func testUnusedClosureParameter() {
