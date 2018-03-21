@@ -151,6 +151,15 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
     enum UnrecoginzedModifierKeywords: String {
         case `static` = "static"
         case `class` = "class"
+
+        var declarationAttributeKind: SwiftDeclarationAttributeKind {
+            switch self {
+            case .class:
+                return .class
+            case .static:
+                return .static
+            }
+        }
     }
 
     public func validate(file: File,
@@ -232,9 +241,9 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
 
             // Fake a class or static attribute in the structure dictionary
             if let match = matchedDeclaration {
-                let attribute: [String: SourceKitRepresentable] = ["key.attribute": SwiftDeclarationAttributeKind.static.rawValue,
+                let attribute: [String: SourceKitRepresentable] = ["key.attribute": keyword.declarationAttributeKind.rawValue,
                                                                    "key.offset": Int64(match.range.location),
-                                                                   "key.length": Int64(6)]
+                                                                   "key.length": Int64(keyword.rawValue.count)]
                 if var attributes = updatedDictionary["key.attributes"] as? [[String: SourceKitRepresentable]] {
                     attributes.append(attribute)
                     updatedDictionary["key.attributes"] = attributes
