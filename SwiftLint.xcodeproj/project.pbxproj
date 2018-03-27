@@ -16,6 +16,7 @@
 		02FD8AEF1BFC18D60014BFFB /* ExtendedNSStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FD8AEE1BFC18D60014BFFB /* ExtendedNSStringTests.swift */; };
 		094385011D5D2894009168CF /* WeakDelegateRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094384FF1D5D2382009168CF /* WeakDelegateRule.swift */; };
 		094385041D5D4F7C009168CF /* PrivateOutletRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094385021D5D4F78009168CF /* PrivateOutletRule.swift */; };
+		186B901E206ADFCD002FE56D /* SwiftDeclarationAttributeKindsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186B901C206ADFC0002FE56D /* SwiftDeclarationAttributeKindsGroup.swift */; };
 		187290721FC37CA50016BEA2 /* YodaConditionRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1872906F1FC37A9B0016BEA2 /* YodaConditionRule.swift */; };
 		1E18574B1EADBA51004F89F7 /* NoExtensionAccessModifierRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E18574A1EADBA51004F89F7 /* NoExtensionAccessModifierRule.swift */; };
 		1E3C2D711EE36C6F00C8386D /* PrivateOverFilePrivateRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E3C2D701EE36C6F00C8386D /* PrivateOverFilePrivateRule.swift */; };
@@ -370,6 +371,7 @@
 		02FD8AEE1BFC18D60014BFFB /* ExtendedNSStringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtendedNSStringTests.swift; sourceTree = "<group>"; };
 		094384FF1D5D2382009168CF /* WeakDelegateRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakDelegateRule.swift; sourceTree = "<group>"; };
 		094385021D5D4F78009168CF /* PrivateOutletRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivateOutletRule.swift; sourceTree = "<group>"; };
+		186B901C206ADFC0002FE56D /* SwiftDeclarationAttributeKindsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDeclarationAttributeKindsGroup.swift; sourceTree = "<group>"; };
 		1872906F1FC37A9B0016BEA2 /* YodaConditionRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YodaConditionRule.swift; sourceTree = "<group>"; };
 		1E18574A1EADBA51004F89F7 /* NoExtensionAccessModifierRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoExtensionAccessModifierRule.swift; sourceTree = "<group>"; };
 		1E3C2D701EE36C6F00C8386D /* PrivateOverFilePrivateRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivateOverFilePrivateRule.swift; sourceTree = "<group>"; };
@@ -776,6 +778,7 @@
 			children = (
 				4DCB8E7D1CBE43640070FCF0 /* RegexHelpers.swift */,
 				D4AB0EA11F8993DD00CEC380 /* NamespaceCollector.swift */,
+				186B901C206ADFC0002FE56D /* SwiftDeclarationAttributeKindsGroup.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -1632,6 +1635,7 @@
 				62A6E7931F3317E3003A0479 /* JoinedDefaultRule.swift in Sources */,
 				D4FD4C851F2A260A00DD8AA8 /* BlockBasedKVORule.swift in Sources */,
 				7C0C2E7A1D2866CB0076435A /* ExplicitInitRule.swift in Sources */,
+				186B901E206ADFCD002FE56D /* SwiftDeclarationAttributeKindsGroup.swift in Sources */,
 				E88DEA771B098D0C00A66CB0 /* Rule.swift in Sources */,
 				D47079AB1DFDCF7A00027086 /* SwiftExpressionKind.swift in Sources */,
 				00B8D9791E2D1223004E0EEC /* LegacyConstantRuleExamples.swift in Sources */,
