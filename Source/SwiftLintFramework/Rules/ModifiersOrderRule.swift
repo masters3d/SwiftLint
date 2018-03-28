@@ -73,7 +73,7 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
         return []
     }
 
-    private func findModifierGroups(in dictionary: [String: SourceKitRepresentable]) -> [SwiftDeclarationAttributeKindsGroup] {
+    private func findModifierGroups(in dictionary: [String: SourceKitRepresentable]) -> [SwiftDeclarationAttributeKind.Group] {
 
         var declarationAttributes = dictionary.enclosedSwiftAttributesWithMetaData
         if let delcarationKinds = contains(in: dictionary, declarationKinds: .functionMethodClass, .functionMethodStatic, .varClass, .varStatic) {
@@ -92,8 +92,8 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
         }
     }
 
-    private func group(of rawAttribute: String) -> SwiftDeclarationAttributeKindsGroup? {
-        for value in SwiftDeclarationAttributeKindsGroup.allValues {
+    private func group(of rawAttribute: String) -> SwiftDeclarationAttributeKind.Group? {
+        for value in SwiftDeclarationAttributeKind.Group.allValues {
             for attributeKind in value.swiftDeclarationAttributeKinds where attributeKind.rawValue.hasSuffix(rawAttribute) {
                 return value
             }
