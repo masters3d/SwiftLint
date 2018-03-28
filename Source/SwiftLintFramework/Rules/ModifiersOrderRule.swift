@@ -98,6 +98,11 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
                 return value
             }
         }
+
+        if rawAttribute == "static" || rawAttribute == "class" {
+            return .typeMethods
+        }
+
         return nil
     }
 
