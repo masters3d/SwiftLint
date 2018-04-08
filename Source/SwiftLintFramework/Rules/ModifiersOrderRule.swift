@@ -11,8 +11,10 @@ import SourceKittenFramework
 
 public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule {
 
-    public init() { }
     public var configuration = ModifiersOrderConfiguration(beforeACL: ["override"], afterACL: [])
+
+    public init() {}
+
     public static let description = RuleDescription(
         identifier: "modifiers_order",
         name: "Modifiers Order",
@@ -52,7 +54,7 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
             return []
         }
 
-        let preferedOrderOfModifiers = [.objcInteroperability, .interfaceBuilder]
+        let preferedOrderOfModifiers: [SwiftDeclarationAttributeKind.Group] = [.objcInteroperability, .interfaceBuilder]
             + configuration.beforeACL
                 .compactMap { return group(of: $0) }
             + [.acl]
@@ -60,41 +62,48 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
                 .compactMap { return group(of: $0) }
 
         let modifierGroupsInDeclaration = findModifierGroups(in: dictionary)
-        let filteredPreferedOrderOfModifiers = preferedOrderOfModifiers.filter { return modifierGroupsInDeclaration.contains($0) }
+        let filteredPreferedOrderOfModifiers = preferedOrderOfModifiers.filter {
+            return modifierGroupsInDeclaration.contains($0)
+        }
 
-        for (index, preferedGroup) in filteredPreferedOrderOfModifiers.enumerated() {
-            if preferedGroup != modifierGroupsInDeclaration[index] {
+        for (index, preferedGroup) in filteredPreferedOrderOfModifiers.enumerated()
+            where preferedGroup != modifierGroupsInDeclaration[index] {
                 return [StyleViolation(ruleDescription: type(of: self).description,
                                        severity: configuration.severityConfiguration.severity,
                                        location: Location(file: file, byteOffset: offset))]
-            }
         }
 
         return []
     }
-
+    // swiftlint:disable line_length
     private func findModifierGroups(in dictionary: [String: SourceKitRepresentable]) -> [SwiftDeclarationAttributeKind.Group] {
 
         var declarationAttributes = dictionary.enclosedSwiftAttributesWithMetaData
-        if let delcarationKinds = contains(in: dictionary, declarationKinds: .functionMethodClass, .functionMethodStatic, .varClass, .varStatic) {
+        if let delcarationKinds = contains(in: dictionary,
+                                           declarationKinds: .functionMethodClass, .functionMethodStatic, .varClass, .varStatic) {
             declarationAttributes.append(delcarationKinds)
         }
 
         return declarationAttributes
             .sorted {
-                guard let rhsOffset = $0["key.offset"] as? Int64, let lhsOffset = $1["key.offset"] as? Int64 else { return false }
+                guard let rhsOffset = $0["key.offset"] as? Int64,
+                      let lhsOffset = $1["key.offset"] as? Int64 else {
+                    return false
+
+                }
                 return rhsOffset < lhsOffset
             }
             .compactMap {
                 if let attribute = $0["key.attribute"] as? String { return group(of: attribute) }
                 if $0["key.kind"] != nil { return .typeMethods }
                 return nil
-        }
+            }
     }
 
     private func group(of rawAttribute: String) -> SwiftDeclarationAttributeKind.Group? {
         for value in SwiftDeclarationAttributeKind.Group.allValues {
-            for attributeKind in value.swiftDeclarationAttributeKinds where attributeKind.rawValue.hasSuffix(rawAttribute) {
+            for attributeKind in value.swiftDeclarationAttributeKinds
+                where attributeKind.rawValue.hasSuffix(rawAttribute) {
                 return value
             }
         }
@@ -106,7 +115,8 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
         return nil
     }
 
-    private func contains(in dictionary: [String: SourceKitRepresentable], declarationKinds: SwiftDeclarationKind...) -> [String: SourceKitRepresentable]? {
+    private func contains(in dictionary: [String: SourceKitRepresentable],
+                          declarationKinds: SwiftDeclarationKind...) -> [String: SourceKitRepresentable]? {
         guard let rawKind = dictionary.kind,
             let kind = SwiftDeclarationKind(rawValue: rawKind),
             let offset = dictionary.offset else { return nil }
