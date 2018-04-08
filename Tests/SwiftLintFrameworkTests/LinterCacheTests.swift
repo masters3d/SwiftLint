@@ -329,7 +329,11 @@ class LinterCacheTests: XCTestCase {
     }
 
     func testDetectSwiftVersion() {
-        #if swift(>=4.1.0)
+        #if swift(>=4.2.0)
+            let version = "4.2.0"
+        #elseif swift(>=4.1.1)
+            let version = "4.1.1"
+        #elseif swift(>=4.1.0)
             let version = "4.1.0"
         #elseif swift(>=4.0.3)
             let version = "4.0.3"
@@ -339,6 +343,10 @@ class LinterCacheTests: XCTestCase {
             let version = "4.0.1"
         #elseif swift(>=4.0.0)
             let version = "4.0.0"
+        #elseif swift(>=3.4.0)
+            let version = "4.2.0" // Since we can't pass SWIFT_VERSION=3 to sourcekit, it returns 4.2.0
+        #elseif swift(>=3.3.1)
+            let version = "4.1.1" // Since we can't pass SWIFT_VERSION=3 to sourcekit, it returns 4.1.1
         #elseif swift(>=3.3.0)
             let version = "4.1.0" // Since we can't pass SWIFT_VERSION=3 to sourcekit, it returns 4.1.0
         #elseif swift(>=3.2.3)
@@ -351,5 +359,19 @@ class LinterCacheTests: XCTestCase {
             let version = "4.0.0" // Since we can't pass SWIFT_VERSION=3 to sourcekit, it returns 4.0.0
         #endif
         XCTAssertEqual(SwiftVersion.current.rawValue, version)
+    }
+
+    // MARK: JSON output
+
+    func testCacheToJSONDoesntCrash() {
+        // swiftlint:disable line_length
+        let key1 = "[\"/SwiftLint/source\",[[\"block_based_kvo\",\"warning\"],[\"class_delegate_protocol\",\"warning\"],[\"closing_brace\",\"warning\"],[\"closure_parameter_position\",\"warning\"],[\"colon\",\"warning, flexible_right_spacing: false, apply_to_dictionaries: true\"],[\"comma\",\"warning\"],[\"compiler_protocol_init\",\"warning\"],[\"control_statement\",\"warning\"],[\"custom_rules\",\"\"],[\"cyclomatic_complexity\",\"warning: 10, error: 20, ignores_case_statements: false\"],[\"discarded_notification_center_observer\",\"warning\"],[\"discouraged_direct_init\",\"warning, types: [\"Bundle\", \"Bundle.init\", \"UIDevice\", \"UIDevice.init\"]\"],[\"dynamic_inline\",\"error\"],[\"empty_enum_arguments\",\"warning\"],[\"empty_parameters\",\"warning\"]]]"
+
+        let key2 = "[\"/SwiftLint/Source\",[[\"block_based_kvo\",\"warning\"],[\"class_delegate_protocol\",\"warning\"],[\"closing_brace\",\"warning\"],[\"closure_parameter_position\",\"warning\"],[\"colon\",\"warning, flexible_right_spacing: false, apply_to_dictionaries: true\"],[\"comma\",\"warning\"],[\"compiler_protocol_init\",\"warning\"],[\"control_statement\",\"warning\"],[\"custom_rules\",\"\"],[\"cyclomatic_complexity\",\"warning: 10, error: 20, ignores_case_statements: false\"],[\"discarded_notification_center_observer\",\"warning\"],[\"discouraged_direct_init\",\"warning, types: [\"Bundle\", \"Bundle.init\", \"UIDevice\", \"UIDevice.init\"]\"],[\"dynamic_inline\",\"error\"],[\"empty_enum_arguments\",\"warning\"],[\"empty_parameters\",\"warning\"]]]"
+        // swiftlint:enable line_length
+
+        let dict = [key1: "test", key2: "test2"]
+
+        XCTAssertNoThrow(try dict.toJSON())
     }
 }

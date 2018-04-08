@@ -5,7 +5,7 @@
 //  Created by Scott Hoyt on 12/28/15.
 //  Copyright © 2015 Realm. All rights reserved.
 //
-// Generated using Sourcery 0.10.1 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 0.11.0 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
 public let masterRuleList = RuleList(rules: [
@@ -29,11 +29,13 @@ public let masterRuleList = RuleList(rules: [
     DiscouragedDirectInitRule.self,
     DiscouragedObjectLiteralRule.self,
     DiscouragedOptionalBooleanRule.self,
+    DiscouragedOptionalCollectionRule.self,
     DynamicInlineRule.self,
     EmptyCountRule.self,
     EmptyEnumArgumentsRule.self,
     EmptyParametersRule.self,
     EmptyParenthesesWithTrailingClosureRule.self,
+    EmptyStringRule.self,
     ExplicitACLRule.self,
     ExplicitEnumRawValueRule.self,
     ExplicitInitRule.self,
@@ -67,6 +69,7 @@ public let masterRuleList = RuleList(rules: [
     LetVarWhitespaceRule.self,
     LineLengthRule.self,
     LiteralExpressionEndIdentationRule.self,
+    LowerACLThanParentRule.self,
     MarkRule.self,
     MultilineArgumentsRule.self,
     ModifiersOrderRule.self,
@@ -122,6 +125,7 @@ public let masterRuleList = RuleList(rules: [
     TypeNameRule.self,
     UnneededBreakInSwitchRule.self,
     UnneededParenthesesInClosureArgumentRule.self,
+    UntypedErrorInCatchRule.self,
     UnusedClosureParameterRule.self,
     UnusedEnumeratedRule.self,
     UnusedOptionalBindingRule.self,
