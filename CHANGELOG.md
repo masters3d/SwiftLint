@@ -56,6 +56,121 @@ The next release will require Swift 4.0 or higher to build.
 * Support building with Swift 4.1.  
   [Norio Nomura](https://github.com/norio-nomura)
   [#2038](https://github.com/realm/SwiftLint/issues/2038)
+* Validate implicit `subscript` getter in `implicit_getter` rule when using
+  Swift 4.1.  
+  [Marcelo Fabri](https://github.com/marcelofabri)
+  [#898](https://github.com/realm/SwiftLint/issues/898)
+
+#### Bug Fixes
+
+* Fixes an issue with the `yoda_condition` rule where the severity would always
+  display as a warning, and the reason would display as the severity type.  
+  [Twig](https://github.com/Twigz)
+
+* Fix TODOs lint message to state that TODOs should be resolved instead of
+  avoided.  
+  [Adonis Peralta](https://github.com/donileo)
+  [#150](https://github.com/realm/SwiftLint/issues/150)
+
+* Fix some cases where `colon` rule wouldn't autocorrect dictionary literals.  
+  [Marcelo Fabri](https://github.com/marcelofabri)
+  [#2050](https://github.com/realm/SwiftLint/issues/2050)
+
+* Fix linux crash on sources with surrogate pair emojis as variable names.  
+  [Cyril Lashkevich](https://github.com/notorca)
+
+* Make `legacy_constructor` rule more reliable, especially for autocorrecting.  
+  [Marcelo Fabri](https://github.com/marcelofabri)
+  [#2098](https://github.com/realm/SwiftLint/issues/2098)
+
+* Fix `colon` rule autocorrect when preprocessor macros are present.  
+  [Marcelo Fabri](https://github.com/marcelofabri)
+  [#2099](https://github.com/realm/SwiftLint/issues/2099)
+
+* Fix crash when saving cache if there're entries referring to the same path
+  but with different capitalization.  
+  [Marcelo Fabri](https://github.com/marcelofabri)
+  [#2032](https://github.com/realm/SwiftLint/issues/2032)
+
+* Fix several rules (`empty_enum_arguments`, `explicit_init`
+  `empty_parentheses_with_trailing_closure`, `joined_default_parameter`,
+  `redundant_optional_initialization`, `redundant_void_return` and
+  `unused_closure_parameter`) rules autocorrection inside functions or other
+  declarations.  
+  [Marcelo Fabri](https://github.com/marcelofabri)
+
+* Fix `redundant_void_return` rule autocorrect when preprocessor macros are
+  present.  
+  [John Szumski](https://github.com/jszumski)
+  [#2115](https://github.com/realm/SwiftLint/issues/2115)
+
+* Fix issue where the autocorrect done message used the plural form of "files"
+  even if only 1 file changed.  
+  [John Szumski](https://github.com/jszumski)
+
+* Fix false positives in `attributes` rule when using Swift 4.1.  
+  [Marcelo Fabri](https://github.com/marcelofabri)
+  [#2125](https://github.com/realm/SwiftLint/issues/2125)
+  [#2141](https://github.com/realm/SwiftLint/issues/2141)
+
+## 0.25.1: Lid Locked
+
+This is the last release to support building with Swift 3.2 and Swift 3.3.
+The next release will require Swift 4.0 or higher to build.
+
+#### Breaking
+
+* None.
+
+#### Enhancements
+
+* Add `LowerACLThanParent` rule.  
+  [Keith Smiley](https://github.com/keith)
+  [#2136](https://github.com/realm/SwiftLint/pull/2136)
+
+* Add `UIOffsetMake` to `legacy_constructor` rule.  
+  [Nealon Young](https://github.com/nealyoung)
+  [#2126](https://github.com/realm/SwiftLint/issues/2126)
+
+* Add a new `excluded` config parameter to the `explicit_type_interface` rule
+  to exempt certain types of variables from the rule.  
+  [Rounak Jain](https://github.com/rounak)
+  [#2028](https://github.com/realm/SwiftLint/issues/2028)
+
+* Add `empty_string` opt-in rule to validate against comparing strings to `""`
+  instead of using `.isEmpty`.  
+  [Davide Sibilio](https://github.com/idevid)
+
+* Add `untyped_error_in_catch` opt-in rule to warn against declaring errors
+  without an explicit type in catch statements instead of using the implicit
+  `error` variable.  
+  [Daniel Metzing](https://github.com/dirtydanee)
+  [#2045](https://github.com/realm/SwiftLint/issues/2045)
+
+* Add `all` keyword for use in disable / enable statement:
+  `// swiftlint:disable all`.
+  It allows disabling SwiftLint entirely, in-code, for a particular section.  
+  [fredpi](https://github.com/fredpi)
+  [#2071](https://github.com/realm/SwiftLint/issues/2071)
+
+* Adds `--force-exclude` option to `lint` and `autocorrect` commands, which will
+  force SwiftLint to exclude files specified in the config `excluded` even if
+  they are explicitly specified with `--path`.  
+  [Ash Furrow](https://github.com/ashfurrow)
+  [#2051](https://github.com/realm/SwiftLint/issues/2051)
+
+* Adds `discouraged_optional_collection` opt-in rule to encourage the use of
+  empty collections instead of optional collections.  
+  [Ornithologist Coder](https://github.com/ornithocoder)
+  [#1885](https://github.com/realm/SwiftLint/issues/1885)
+
+* Add 4.1.0, 4.1.1 and 4.2.0 to Swift version detection.  
+  [Norio Nomura](https://github.com/norio-nomura)
+  [#2143](https://github.com/realm/SwiftLint/issues/2143)
+
+* Support building with Swift 4.1.  
+  [Norio Nomura](https://github.com/norio-nomura)
+  [#2038](https://github.com/realm/SwiftLint/issues/2038)
 
 #### Bug Fixes
 
