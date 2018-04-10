@@ -9,17 +9,16 @@
 import SourceKittenFramework
 
 extension SwiftDeclarationAttributeKind {
-    internal enum Group: Int {
+    public enum ModifierGroup: String, CustomDebugStringConvertible {
+        case `override`
         case acl
         case setterACL
-        case mutators
         case owned
-        case `override`
-        case objcInteroperability
-        case availability
+        case mutators
         case final
-        case interfaceBuilder
         case typeMethods
+        case interfaceBuilder
+        case objcInteroperability
 
         var swiftDeclarationAttributeKinds: Set<SwiftDeclarationAttributeKind> {
             switch self {
@@ -43,35 +42,36 @@ extension SwiftDeclarationAttributeKind {
                 return [.override]
             case .owned:
                 return [.weak]
+            case .final:
+                return [.final]
+            case .typeMethods:
+                return []
             case .objcInteroperability:
                 return [.objc,
                         .nonobjc,
                         .objcMembers]
-            case .availability:
-                return [.available]
-            case .final:
-                return [.final]
             case .interfaceBuilder:
                 return [.ibaction,
                         .iboutlet,
                         .ibdesignable,
                         .ibinspectable]
-            case .typeMethods:
-                return []
             }
         }
 
-        static var allValues: Set<SwiftDeclarationAttributeKind.Group> {
+        static var allValues: Set<SwiftDeclarationAttributeKind.ModifierGroup> {
             return [.acl,
                     .setterACL,
                     .mutators,
                     .override,
                     .owned,
                     .objcInteroperability,
-                    .availability,
                     .final,
                     .interfaceBuilder,
                     .typeMethods]
+        }
+
+        public var debugDescription: String {
+            return self.rawValue
         }
     }
 }

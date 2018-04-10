@@ -6,23 +6,18 @@
 //  Copyright © 2017 Realm. All rights reserved.
 //
 
-import Foundation
+import SourceKittenFramework
 
 public struct ModifiersOrderConfiguration: RuleConfiguration, Equatable {
     private(set) var severityConfiguration = SeverityConfiguration(.warning)
-    private(set) var beforeACL = [String]()
-    private(set) var afterACL = [String]()
-
+    private(set) var preferedModifiersOrder = [SwiftDeclarationAttributeKind.ModifierGroup]()
+    
     public var consoleDescription: String {
-        return severityConfiguration.consoleDescription +
-            ", before_acl: \(beforeACL)" +
-            ", after_acl: \(afterACL)"
+        return severityConfiguration.consoleDescription + ", prefered_modifiers_order: \(preferedModifiersOrder)"
     }
 
-    public init(beforeACL: [String] = [],
-                afterACL: [String] = []) {
-        self.beforeACL = beforeACL
-        self.afterACL = afterACL
+    public init(preferedModifiersOrder: [SwiftDeclarationAttributeKind.ModifierGroup] = []) {
+        self.preferedModifiersOrder = preferedModifiersOrder
     }
 
     public mutating func apply(configuration: Any) throws {
@@ -30,28 +25,17 @@ public struct ModifiersOrderConfiguration: RuleConfiguration, Equatable {
             throw ConfigurationError.unknownConfiguration
         }
 
-        if let beforeACL = configuration["before_acl"] as? [String] {
-            self.beforeACL = beforeACL
-        }
-
-        if let afterACL = configuration["after_acl"] as? [String] {
-            self.afterACL = afterACL
-        }
-
-        // Make sure no entries are in both sets
-        if !Set(afterACL).isDisjoint(with: beforeACL) {
-            throw ConfigurationError.unknownConfiguration
+        if let beforeACL = configuration["prefered_modifiers_order"] as? [String] {
+            self.preferedModifiersOrder = try beforeACL.map {
+                guard let modifierGroup = SwiftDeclarationAttributeKind.ModifierGroup(rawValue: $0) else {
+                    throw ConfigurationError.unknownConfiguration
+                }
+                return modifierGroup
+            }
         }
 
         if let severityString = configuration["severity"] as? String {
             try severityConfiguration.apply(configuration: severityString)
         }
     }
-}
-
-public func == (lhs: ModifiersOrderConfiguration,
-                rhs: ModifiersOrderConfiguration) -> Bool {
-    return lhs.severityConfiguration == rhs.severityConfiguration &&
-        lhs.beforeACL == rhs.beforeACL &&
-        rhs.afterACL == rhs.afterACL
 }

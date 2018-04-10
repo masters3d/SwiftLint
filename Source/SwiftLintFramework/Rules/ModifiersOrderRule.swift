@@ -11,7 +11,7 @@ import SourceKittenFramework
 
 public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule {
 
-    public var configuration = ModifiersOrderConfiguration(beforeACL: ["override"], afterACL: [])
+    public var configuration = ModifiersOrderConfiguration(preferedModifiersOrder: [.override, .acl])
 
     public init() {}
 
@@ -29,7 +29,10 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
                 "private final func myFinal() {}\n" +
                 "weak var myWeak: NSString? = nil\n" +
             "public static let nnumber = 3 \n }",
-            "public final class MyClass {}"
+            "public final class MyClass {}",
+            "class RootClass { func myFinal() {}}\n" +
+                "internal class MyClass: RootClass {" +
+            "override internal func myFinal() {}}"
         ],
         triggeringExamples: [
             "class Foo { \n static public let bar = 3 {} \n }",
@@ -54,18 +57,13 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
             return []
         }
 
-        let preferedOrderOfModifiers: [SwiftDeclarationAttributeKind.Group] = [.objcInteroperability, .interfaceBuilder]
-            + configuration.beforeACL
-                .compactMap { return group(of: $0) }
-            + [.acl]
-            + configuration.afterACL
-                .compactMap { return group(of: $0) }
-
+        let preferedOrderOfModifiers = [.objcInteroperability, .interfaceBuilder] + configuration.preferedModifiersOrder
+        print(preferedOrderOfModifiers)
         let modifierGroupsInDeclaration = findModifierGroups(in: dictionary)
         let filteredPreferedOrderOfModifiers = preferedOrderOfModifiers.filter {
             return modifierGroupsInDeclaration.contains($0)
         }
-
+        print(filteredPreferedOrderOfModifiers)
         for (index, preferedGroup) in filteredPreferedOrderOfModifiers.enumerated()
             where preferedGroup != modifierGroupsInDeclaration[index] {
                 return [StyleViolation(ruleDescription: type(of: self).description,
@@ -76,7 +74,7 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
         return []
     }
     // swiftlint:disable line_length
-    private func findModifierGroups(in dictionary: [String: SourceKitRepresentable]) -> [SwiftDeclarationAttributeKind.Group] {
+    private func findModifierGroups(in dictionary: [String: SourceKitRepresentable]) -> [SwiftDeclarationAttributeKind.ModifierGroup] {
 
         var declarationAttributes = dictionary.enclosedSwiftAttributesWithMetaData
         if let delcarationKinds = contains(in: dictionary,
@@ -100,8 +98,8 @@ public struct ModifiersOrderRule: ASTRule, OptInRule, ConfigurationProviderRule 
             }
     }
 
-    private func group(of rawAttribute: String) -> SwiftDeclarationAttributeKind.Group? {
-        for value in SwiftDeclarationAttributeKind.Group.allValues {
+    private func group(of rawAttribute: String) -> SwiftDeclarationAttributeKind.ModifierGroup? {
+        for value in SwiftDeclarationAttributeKind.ModifierGroup.allValues {
             for attributeKind in value.swiftDeclarationAttributeKinds
                 where attributeKind.rawValue.hasSuffix(rawAttribute) {
                 return value
