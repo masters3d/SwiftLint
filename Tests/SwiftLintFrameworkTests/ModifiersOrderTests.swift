@@ -39,7 +39,7 @@ class ModifiersOrderTests: XCTestCase {
         verifyRule(descriptionOverride,
                    ruleConfiguration: ["prefered_modifiers_order": ["typeMethods", "acl"]])
     }
-    //swiftlint:disable function_body_length
+
     func testRightOrderedModifierGroups() {
         // testing modifiers ordered to the right from the ACL
         let descriptionOverride = RuleDescription(
